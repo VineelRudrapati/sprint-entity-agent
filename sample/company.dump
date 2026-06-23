@@ -1,0 +1,21 @@
+CREATE TABLE department (
+
+ id SERIAL PRIMARY KEY,
+
+ name VARCHAR(100)
+
+);
+
+CREATE TABLE employee (
+
+ id SERIAL PRIMARY KEY,
+
+ name VARCHAR(100),
+
+ department_id INT,
+
+ CONSTRAINT fk_dep
+ FOREIGN KEY (department_id)
+ REFERENCES department(id)
+
+);

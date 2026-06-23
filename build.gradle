@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'info.picocli:picocli:4.7.7'
+
+    implementation 'com.github.jsqlparser:jsqlparser:5.0'
+
+    implementation 'com.squareup:javapoet:1.13.0'
+
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'ch.qos.logback:logback-classic:1.5.18'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+application {
+    mainClass = 'com.vr.Main'
+}
+
+test {
+    useJUnitPlatform()
+}

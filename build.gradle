@@ -17,7 +17,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.vr.Main'
+    mainClass = 'com.vr.schemaagent.SchemaAgentApplication'
 }
 
 test {

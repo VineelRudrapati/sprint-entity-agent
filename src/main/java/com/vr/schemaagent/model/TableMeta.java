@@ -27,11 +27,27 @@ public class TableMeta {
         getColumn(columnName).ifPresent(column -> column.setPrimaryKey(true));
     }
 
+    public void markUnique(String columnName) {
+        getColumn(columnName).ifPresent(column -> column.setUnique(true));
+    }
+
     public RelationMeta findRelationForColumn(String columnName) {
         return relations.stream()
                 .filter(relation -> relation.getSourceColumn().equalsIgnoreCase(columnName))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean isColumnUnique(String columnName) {
+        return getColumn(columnName)
+                .map(ColumnMeta::isUnique)
+                .orElse(false);
+    }
+
+    public boolean isColumnPrimaryKey(String columnName) {
+        return getColumn(columnName)
+                .map(ColumnMeta::isPrimaryKey)
+                .orElse(false);
     }
 
     public String getName() {
@@ -48,5 +64,13 @@ public class TableMeta {
 
     public List<RelationMeta> getRelations() {
         return relations;
+    }
+
+    public List<String> getForeignKeyColumnNames() {
+        List<String> foreignKeyColumns = new ArrayList<>();
+        for (RelationMeta relation : relations) {
+            foreignKeyColumns.add(relation.getSourceColumn());
+        }
+        return foreignKeyColumns;
     }
 }

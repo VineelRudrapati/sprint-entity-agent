@@ -59,7 +59,7 @@ public class DumpParser {
     }
 
     private void parseColumns(String body, TableMeta table) {
-        String[] lines = body.split("\\r?\\n");
+        String[] lines = body.split("\r?\n");
 
         for (String rawLine : lines) {
             String line = rawLine.trim();
@@ -82,9 +82,12 @@ public class DumpParser {
             String name = matcher.group(1);
             String typeDefinition = matcher.group(2).trim();
             boolean primaryKey = PK_INLINE_PATTERN.matcher(typeDefinition).find();
+            boolean unique = typeDefinition.toUpperCase().contains("UNIQUE");
 
             typeDefinition = typeDefinition.replaceAll("(?i)PRIMARY KEY", "").trim();
-            table.addColumn(new ColumnMeta(name, typeDefinition, primaryKey));
+            typeDefinition = typeDefinition.replaceAll("(?i)UNIQUE", "").trim();
+
+            table.addColumn(new ColumnMeta(name, typeDefinition, primaryKey, unique));
             parseInlineForeignKey(line, table, name);
         }
     }

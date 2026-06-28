@@ -51,7 +51,7 @@ public class SchemaAgentApplication implements Runnable {
 
             EntityGenerator generator = new EntityGenerator();
             for (TableMeta table : schema.getTables()) {
-                generator.generate(table, packageName, outputDirectory);
+                generator.generate(schema, table, packageName, outputDirectory);
             }
         } catch (Exception e) {
             System.err.println("Generation failed: " + e.getMessage());

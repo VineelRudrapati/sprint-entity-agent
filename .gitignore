@@ -1,21 +1,86 @@
-.gradle
-**/build/
-!**/src/**/build/
+############################################
+# IntelliJ IDEA
+############################################
+.idea/
+*.iml
+out/
 
-# Ignore Gradle GUI config
-gradle-app.setting
+############################################
+# VS Code
+############################################
+.vscode/
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Avoid ignore Gradle wrappper properties
-!gradle-wrapper.properties
-
-# Cache of project
-.gradletasknamecache
-
-# Eclipse Gradle plugin generated files
-# Eclipse Core
+############################################
+# Eclipse
+############################################
 .project
-# JDT-specific (Eclipse Java Development Tools)
 .classpath
+.settings/
+bin/
+
+############################################
+# Gradle
+############################################
+.gradle/
+build/
+
+############################################
+# Generated Output
+############################################
+output/
+
+############################################
+# Logs
+############################################
+*.log
+logs/
+
+############################################
+# OS Files
+############################################
+.DS_Store
+Thumbs.db
+
+############################################
+# Java
+############################################
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+
+############################################
+# Temporary Files
+############################################
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+############################################
+# Environment Files
+############################################
+.env
+.env.*
+!.env.example
+
+############################################
+# Maven (future)
+############################################
+target/
+
+############################################
+# Generated Reports
+############################################
+reports/
+*.json
+
+############################################
+# Local AI Models / Cache (future)
+############################################
+models/
+cache/
+ollama/

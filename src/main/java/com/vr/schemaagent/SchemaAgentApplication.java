@@ -1,6 +1,12 @@
 package com.vr.schemaagent;
 
 import com.vr.schemaagent.generator.EntityGenerator;
+import com.vr.schemaagent.generator.RepositoryGenerator;
+import com.vr.schemaagent.generator.DTOGenerator;
+import com.vr.schemaagent.generator.ServiceGenerator;
+import com.vr.schemaagent.report.GenerationReport;
+import com.vr.schemaagent.report.GenerationReportWriter;
+import com.vr.schemaagent.validation.ValidationUtils;
 import com.vr.schemaagent.model.SchemaMeta;
 import com.vr.schemaagent.model.TableMeta;
 import com.vr.schemaagent.parser.DumpParser;
@@ -49,9 +55,67 @@ public class SchemaAgentApplication implements Runnable {
             System.out.println("Found " + schema.getTables().size() + " tables.");
             System.out.println("Generating entities into " + outputDirectory.toAbsolutePath() + "\n");
 
-            EntityGenerator generator = new EntityGenerator();
+            // validation
+            String[] duplicates = com.vr.schemaagent.validation.ValidationUtils.findDuplicateClassNames(schema);
+            String[] invalid = com.vr.schemaagent.validation.ValidationUtils.findInvalidNames(schema);
+
+            int warnings = 0;
+            if (duplicates.length > 0) {
+                System.err.println("Duplicate table names detected: ");
+                for (String d : duplicates) System.err.println(" - " + d);
+                warnings += duplicates.length;
+            }
+            if (invalid.length > 0) {
+                System.err.println("Invalid table names detected: ");
+                for (String d : invalid) System.err.println(" - " + d);
+                warnings += invalid.length;
+            }
+
+            EntityGenerator entityGenerator = new EntityGenerator();
+            RepositoryGenerator repoGenerator = new RepositoryGenerator();
+            DTOGenerator dtoGenerator = new DTOGenerator();
+            ServiceGenerator svcGenerator = new ServiceGenerator();
+
+            com.vr.schemaagent.report.GenerationReport report = new com.vr.schemaagent.report.GenerationReport();
+            report.setTables(schema.getTables().size());
+
+            int entities = 0, repos = 0, dtos = 0, svcs = 0, relations = 0, failed = 0;
+
             for (TableMeta table : schema.getTables()) {
-                generator.generate(schema, table, packageName, outputDirectory);
+                try {
+                    entityGenerator.generate(schema, table, packageName, outputDirectory);
+                    entities++;
+
+                    repoGenerator.generate(table, packageName, outputDirectory);
+                    repos++;
+
+                    dtoGenerator.generate(table, packageName, outputDirectory);
+                    dtos++;
+
+                    svcGenerator.generate(table, packageName, outputDirectory);
+                    svcs++;
+
+                    relations += table.getRelations().size();
+                } catch (Exception e) {
+                    failed++;
+                    System.err.println("Failed to generate for table " + table.getName() + ": " + e.getMessage());
+                }
+            }
+
+            report.setEntitiesGenerated(entities);
+            report.setRepositoriesGenerated(repos);
+            report.setDtosGenerated(dtos);
+            report.setServicesGenerated(svcs);
+            report.setRelationships(relations);
+            report.setFailed(failed);
+            report.setWarnings(warnings);
+
+            com.vr.schemaagent.report.GenerationReportWriter reportWriter = new com.vr.schemaagent.report.GenerationReportWriter();
+            try {
+                reportWriter.write(report, outputDirectory);
+                System.out.println("Wrote generation-report.json to " + outputDirectory.toAbsolutePath());
+            } catch (Exception e) {
+                System.err.println("Failed to write report: " + e.getMessage());
             }
         } catch (Exception e) {
             System.err.println("Generation failed: " + e.getMessage());
